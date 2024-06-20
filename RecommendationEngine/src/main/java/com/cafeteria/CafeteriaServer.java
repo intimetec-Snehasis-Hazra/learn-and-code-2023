@@ -175,6 +175,41 @@ class ClientHandler extends Thread {
                         out.println("Only chefs can get recommendations.");
                     }
                     break;
+                    case "VIEW_RECOMMENDATIONS":
+                    if (user instanceof Employee) {
+                        List<String> recommendations = Database.getRecommendations();
+                        for (String recommendation : recommendations) {
+                            out.println(recommendation);
+                        }
+                        out.println(); // Indicate end of recommendations
+                    } else {
+                        out.println("Only employees can view recommendations.");
+                    }
+                    break;
+                    case "VIEW_VOTING_RESULTS":
+                    if (user instanceof Chef) {
+                        List<VotingResult> votingResults = Database.getVotingResults();
+                        for (VotingResult result : votingResults) {
+                            out.println(result.getMenuItemId() + ". " + result.getMenuItemName() + " - Votes: " + result.getVoteCount());
+                        }
+                    } else {
+                        out.println("Only chefs can view voting results.");
+                    }
+                    break;
+                    case "CHOOSE_FINAL_MENU":
+                    if (user instanceof Chef) {
+                        out.println("Enter Menu Item IDs for Final Menu (comma separated): ");
+                        String[] finalMenuIds = in.readLine().split(",");
+                        List<MenuItem> finalMenuItems = new ArrayList<>();
+                        for (String id : finalMenuIds) {
+                            finalMenuItems.add(Database.getMenuItemById(Integer.parseInt(id)));
+                        }
+                        ((Chef) user).chooseFinalMenu(finalMenuItems);
+                        out.println("Final menu chosen.");
+                    } else {
+                        out.println("Only chefs can choose the final menu.");
+                    }
+                    break;
                 case "VOTE":
                     if (user instanceof Employee) {
                         out.println("Enter Menu Item ID: ");

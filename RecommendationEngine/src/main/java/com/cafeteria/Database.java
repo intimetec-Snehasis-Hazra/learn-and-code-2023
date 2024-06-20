@@ -88,7 +88,7 @@ public class Database {
 
     public static void updateMenuItem(int id, String name, float price, boolean availability) {
         try (Connection conn = getConnection()) {
-            String query = "UPDATE MenuItems SET name = ?, price = ?, availability = ? WHERE id = ?";
+            String query = "UPDATE MenuItems SET name = ?, price = ?, isAvailable = ? WHERE id = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
             stmt.setString(1, name);
             stmt.setFloat(2, price);
@@ -191,7 +191,7 @@ public class Database {
                                 resultSet.getInt("id"),
                                 resultSet.getString("name"),
                                 resultSet.getFloat("price"),
-                                resultSet.getBoolean("availability"));
+                                resultSet.getBoolean("isAvailable"));
                         topRatedItems.add(menuItem);
                     }
                 }
@@ -199,6 +199,24 @@ public class Database {
         }
         topRatedItems.sort((a, b) -> Double.compare(averageRatings.get(b.getId()), averageRatings.get(a.getId())));
         return topRatedItems.subList(0, Math.min(topRatedItems.size(), 5)); // Return top 5 items
+    }
+
+    public static List<VotingResult> getVotingResults() throws SQLException {
+        List<VotingResult> results = new ArrayList<>();
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                     "SELECT menuItemId, COUNT(*) as voteCount FROM Votes GROUP BY menuItemId ORDER BY voteCount DESC")) {
+            while (rs.next()) {
+                VotingResult result = new VotingResult(
+                        rs.getInt("menuItemId"),
+                        getMenuItemName(rs.getInt("menuItemId")),
+                        rs.getInt("voteCount")
+                );
+                results.add(result);
+            }
+        }
+        return results;
     }
 
     public static void storeVote(String employeeId, int menuItemId) throws SQLException {
@@ -220,6 +238,35 @@ public class Database {
         }
     }
 
+    public static List<String> getRecommendations() {
+        List<String> recommendations = new ArrayList<>();
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM FoodRecommendations WHERE recommendationDate = CURDATE()")) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int itemId = rs.getInt("itemId");
+                recommendations.add(getMenuItemName(itemId));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return recommendations;
+    }
+
+    private static String getMenuItemName(int itemId) {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT name FROM MenuItems WHERE id = ?")) {
+            stmt.setInt(1, itemId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "Unknown Item";
+    }
+
     public static List<MenuItem> getItemsWithMostVotes() throws SQLException {
         String query = "SELECT menuItemId, COUNT(*) AS voteCount FROM Votes GROUP BY menuItemId ORDER BY voteCount DESC";
         List<MenuItem> menuItems = new ArrayList<>();
@@ -237,13 +284,20 @@ public class Database {
         return menuItems;
     }
 
-    public static void storeFinalMenu(List<MenuItem> menuItems) throws SQLException {
-        String query = "INSERT INTO FinalMenu (menuItemId, date) VALUES (?, CURRENT_DATE)";
-        try (Connection connection = getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            for (MenuItem item : menuItems) {
-                preparedStatement.setInt(1, item.getId());
-                preparedStatement.executeUpdate();
+    public static void storeFinalMenu(List<MenuItem> finalMenuItems) throws SQLException {
+        try (Connection conn = getConnection()) {
+            // Clear the previous final menu
+            try (Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("DELETE FROM FinalMenu");
+            }
+
+            // Store the new final menu
+            try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO FinalMenu (menuItemId) VALUES (?)")) {
+                for (MenuItem item : finalMenuItems) {
+                    stmt.setInt(1, item.getId());
+                    stmt.addBatch();
+                }
+                stmt.executeBatch();
             }
         }
     }

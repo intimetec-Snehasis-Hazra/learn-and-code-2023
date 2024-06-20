@@ -89,4 +89,8 @@ public class Chef extends User {
         Database.storeFinalMenu(votedItems);
         NotificationManager.notifyUsers("Tomorrow's menu has been finalized!");
     }
+
+    public void chooseFinalMenu(List<MenuItem> finalMenuItems) throws SQLException {
+        Database.storeFinalMenu(finalMenuItems);
+    }
 }

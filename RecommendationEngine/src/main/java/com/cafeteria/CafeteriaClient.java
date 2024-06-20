@@ -70,6 +70,20 @@ public class CafeteriaClient {
                                 System.out.println("Invalid command for your role.");
                             }
                             break;
+                            case "VIEW_VOTING_RESULTS":
+                            if ("Chef".equals(role)) {
+                                handleViewVotingResults(in);
+                            } else {
+                                System.out.println("Invalid command for your role.");
+                            }
+                            break;
+                        case "CHOOSE_FINAL_MENU":
+                            if ("Chef".equals(role)) {
+                                handleChooseFinalMenu(scanner, out);
+                            } else {
+                                System.out.println("Invalid command for your role.");
+                            }
+                            break;
                         case "GIVE_FEEDBACK":
                             if ("Employee".equals(role)) {
                                 handleGiveFeedback(scanner, out);
@@ -109,9 +123,12 @@ public class CafeteriaClient {
         if ("Employee".equals(role)) {
             System.out.println("GIVE_FEEDBACK - To give feedback");
             System.out.println("VOTE - To vote for items");
+            System.out.println("VIEW_RECOMMENDATIONS: View recommendations sent by the chef.");
         } else if ("Chef".equals(role)) {
             System.out.println("SEND_RECOMMENDATION - To send recommendations");
             System.out.println("VIEW_FEEDBACK_REPORTS - To view feedback reports");
+            System.out.println("VIEW_VOTING_RESULTS: View the voting results of menu items.");
+            System.out.println("CHOOSE_FINAL_MENU: Choose the final menu based on voting results.");
         } else if ("Admin".equals(role)) {
             System.out.println("ADD_MENU_ITEM - To add a menu item");
             System.out.println("UPDATE_MENU_ITEM - To update a menu item");
@@ -161,6 +178,20 @@ public class CafeteriaClient {
         out.println(deleteItemId);
     }
 
+    private static void handleViewVotingResults(BufferedReader in) throws IOException {
+        System.out.println("Voting Results:");
+        String resultLine;
+        while (!(resultLine = in.readLine()).isEmpty()) {
+            System.out.println(resultLine);
+        }
+    }
+
+    private static void handleChooseFinalMenu(Scanner scanner, PrintWriter out) {
+        System.out.print("Enter Menu Item IDs for Final Menu (comma separated): ");
+        String finalMenuIds = scanner.nextLine();
+        out.println(finalMenuIds);
+    }
+    
     private static void handleSendRecommendation(Scanner scanner, PrintWriter out) {
         System.out.print("Enter Menu Item IDs (comma separated): ");
         String ids = scanner.nextLine();
