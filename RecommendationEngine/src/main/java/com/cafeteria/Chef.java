@@ -3,8 +3,8 @@ import java.sql.*;
 import java.util.List;
 
 public class Chef extends User {
-    public Chef(String employeeId, String name, String role) {
-        super(employeeId, name, role);
+    public Chef(String employeeId, String name) {
+        super(employeeId, name);
     }
 
     public void sendRecommendation(List<MenuItem> items) {
@@ -51,5 +51,42 @@ public class Chef extends User {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public String viewFeedbackReports() {
+        StringBuilder report = new StringBuilder();
+        try {
+            List<Feedback> feedbackList = Database.getAllFeedbacks();
+            if (feedbackList.isEmpty()) {
+                report.append("No feedback available.\n");
+            } else {
+                for (Feedback feedback : feedbackList) {
+                    MenuItem menuItem = Database.getMenuItemById(feedback.getMenuItemId());
+                    report.append("Menu Item: ").append(menuItem.getName()).append("\n");
+                    report.append("Comment: ").append(feedback.getComment()).append("\n");
+                    report.append("Rating: ").append(feedback.getRating()).append("\n");
+                    report.append("Sentiment: ").append(feedback.getSentiment()).append("\n");
+                    //report.append("Date: ").append(feedback.getDate()).append("\n");
+                    report.append("-----------\n");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            report.append("Error retrieving feedback reports.\n");
+        }
+        return report.toString();
+    }
+
+    public void selectItemsForVoting(List<MenuItem> recommendedItems) throws SQLException {
+        for (MenuItem item : recommendedItems) {
+            Database.addItemForVoting(item.getId());
+        }
+        NotificationManager.notifyUsers("Vote for tomorrow's menu items!");
+    }
+
+    public void finalizeMenu() throws SQLException {
+        List<MenuItem> votedItems = Database.getItemsWithMostVotes();
+        Database.storeFinalMenu(votedItems);
+        NotificationManager.notifyUsers("Tomorrow's menu has been finalized!");
     }
 }

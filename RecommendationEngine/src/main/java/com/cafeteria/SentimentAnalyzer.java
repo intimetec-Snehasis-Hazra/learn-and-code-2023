@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SentimentAnalysis {
+public class SentimentAnalyzer {
 
     private static final Set<String> POSITIVE_WORDS = new HashSet<>(Arrays.asList(
         "good", "great", "excellent", "amazing", "fantastic", "positive", "nice", "love", "like"

@@ -4,10 +4,9 @@ public class User {
     private String name;
     private String role;
 
-    public User(String employeeId, String name, String role) {
+    public User(String employeeId, String name) {
         this.employeeId = employeeId;
         this.name = name;
-        this.role = role;
     }
 
     public String getEmployeeId() {
@@ -22,8 +21,8 @@ public class User {
         return role;
     }
 
-    public boolean login(String employeeId, String name) {
-        // Validate user credentials by checking with the database
-        return Database.validateUser(employeeId, name);
-    }
+    // public boolean login(String employeeId, String name) {
+    //     // Validate user credentials by checking with the database
+    //     return Database.validateUser(employeeId, name);
+    // }
 }

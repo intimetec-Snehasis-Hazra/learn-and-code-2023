@@ -1,8 +1,8 @@
 package src.main.java.com.cafeteria;
 
 public class Admin extends User {
-    public Admin(String employeeId, String name, String role) {
-        super(employeeId, name, role);
+    public Admin(String employeeId, String name) {
+        super(employeeId, name);
     }
 
     public void addMenuItem(String name, float price, boolean availability) {

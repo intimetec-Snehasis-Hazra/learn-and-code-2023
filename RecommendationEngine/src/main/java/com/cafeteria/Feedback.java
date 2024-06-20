@@ -1,19 +1,24 @@
 package src.main.java.com.cafeteria;
+
 import java.util.Date;
 
 public class Feedback {
+    private int menuItemId;
     private String comment;
     private int rating;
-    private Date feedbackDate;
-    private int itemId;
-    private String userId;
+    private String sentiment;
+    //private Date date;
 
-    public Feedback(String comment, int rating, Date feedbackDate, int itemId, String userId) {
+    public Feedback(int menuItemId, String comment, int rating, String sentiment) {
+        this.menuItemId = menuItemId;
         this.comment = comment;
         this.rating = rating;
-        this.feedbackDate = feedbackDate;
-        this.itemId = itemId;
-        this.userId = userId;
+        this.sentiment = sentiment;
+        //this.date = date;
+    }
+
+    public int getMenuItemId() {
+        return menuItemId;
     }
 
     public String getComment() {
@@ -24,15 +29,11 @@ public class Feedback {
         return rating;
     }
 
-    public Date getFeedbackDate() {
-        return feedbackDate;
+    public String getSentiment() {
+        return sentiment;
     }
 
-    public int getItemId() {
-        return itemId;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
+    // public Date getDate() {
+    //     return date;
+    // }
 }
