@@ -29,6 +29,7 @@ class ClientHandler extends Thread {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+    private String sessionId;
 
     public ClientHandler(Socket socket) {
         this.socket = socket;
@@ -49,8 +50,16 @@ class ClientHandler extends Thread {
             if (user != null) {
                 out.println("Login successful as " + role.getSimpleName());
 
+                sessionId = Database.trackLogin(employeeId);
+
                 String command;
                 while ((command = in.readLine()) != null) {
+                    if (command.equals("LOGOUT")) {
+                        out.println("Logging out. Returning to login screen.");
+                        // Track logout time
+                        Database.trackLogout(sessionId);
+                        break;
+                    }
                     processCommand(user, command);
                 }
             } else {
@@ -192,6 +201,7 @@ class ClientHandler extends Thread {
                         for (VotingResult result : votingResults) {
                             out.println(result.getMenuItemId() + ". " + result.getMenuItemName() + " - Votes: " + result.getVoteCount());
                         }
+                        out.println();
                     } else {
                         out.println("Only chefs can view voting results.");
                     }
@@ -210,6 +220,21 @@ class ClientHandler extends Thread {
                         out.println("Only chefs can choose the final menu.");
                     }
                     break;
+                    case "VIEW_FINAL_MENU":
+                if (user instanceof Employee) {
+                    try {
+                        List<MenuItem> finalMenu = Database.getFinalMenu();
+                        for (MenuItem item : finalMenu) {
+                            out.println(item.getId() + ". " + item.getName() + " - $" + item.getPrice() + " - " + (item.isAvailable() ? "Available" : "Not Available"));
+                        }
+                        out.println(); // Indicate end of menu
+                    } catch (SQLException e) {
+                        out.println("Error retrieving final menu: " + e.getMessage());
+                    }
+                } else {
+                    out.println("Only employees can view the final menu.");
+                }
+                break;
                 case "VOTE":
                     if (user instanceof Employee) {
                         out.println("Enter Menu Item ID: ");
@@ -218,6 +243,19 @@ class ClientHandler extends Thread {
                         out.println("Vote submitted.");
                     } else {
                         out.println("Only employees can vote.");
+                    }
+                    break;
+                    case "SHOW_LOGIN_LOGOUT_HISTORY":
+                    if (user instanceof Admin) {
+                        List<UserSession> sessions = Database.getLoginLogoutHistory();
+                        for (UserSession session : sessions) {
+                            out.println("Employee ID: " + session.getEmployeeId() + 
+                                        ", Login Time: " + session.getLoginTime() + 
+                                        ", Logout Time: " + session.getLogoutTime());
+                        }
+                        out.println(); // Indicate end of history
+                    } else {
+                        out.println("Only admin can view login/logout history.");
                     }
                     break;
                 default:

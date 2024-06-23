@@ -54,6 +54,24 @@ public class Database {
         return null;
     }
 
+    public static List<UserSession> getLoginLogoutHistory() throws SQLException {
+        List<UserSession> sessions = new ArrayList<>();
+        String query = "SELECT employeeId, loginTime, logoutTime FROM UserSessions ORDER BY loginTime DESC";
+        
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            
+            while (resultSet.next()) {
+                String employeeId = resultSet.getString("employeeId");
+                String loginTime = resultSet.getString("loginTime");
+                String logoutTime = resultSet.getString("logoutTime");
+                sessions.add(new UserSession(employeeId, loginTime, logoutTime));
+            }
+        }
+        return sessions;
+    }
+
     public static List<MenuItem> getAllMenuItems() {
         List<MenuItem> menuItems = new ArrayList<>();
         try (Connection conn = getConnection()) {
@@ -319,6 +337,49 @@ public class Database {
             e.printStackTrace();
         }
         return menuItem;
+    }
+
+    public static String trackLogin(String employeeId) throws SQLException {
+        try (Connection conn = getConnection()) {
+            String query = "INSERT INTO UserSessions (employeeId) VALUES (?)";
+            try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, employeeId);
+                stmt.executeUpdate();
+
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getString(1); // Return session id
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static void trackLogout(String sessionId) throws SQLException {
+        try (Connection conn = getConnection()) {
+            String query = "UPDATE UserSessions SET logoutTime = CURRENT_TIMESTAMP WHERE id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, sessionId);
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    public static List<MenuItem> getFinalMenu() throws SQLException {
+        List<MenuItem> finalMenu = new ArrayList<>();
+        try (Connection conn = getConnection()) {
+            String query = "SELECT mi.id, mi.name, mi.price, mi.isAvailable, fm.date FROM FinalMenu fm JOIN MenuItems mi ON fm.menuItemId = mi.id";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        MenuItem menuItem = new MenuItem(rs.getInt("id"), rs.getString("name"), rs.getFloat("price"), rs.getBoolean("isAvailable"));
+                        finalMenu.add(menuItem);
+                    }
+                }
+            }
+        }
+        return finalMenu;
     }
 
 }
