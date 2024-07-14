@@ -95,6 +95,7 @@ class ClientHandler extends Thread {
                         out.println(item.getId() + ". " + item.getName() + " - $" + item.getPrice() + " - "
                                 + (item.isAvailable() ? "Available" : "Not Available"));
                     }
+                    out.println();
                     break;
                 case "GIVE_FEEDBACK":
                     if (user instanceof Employee) {

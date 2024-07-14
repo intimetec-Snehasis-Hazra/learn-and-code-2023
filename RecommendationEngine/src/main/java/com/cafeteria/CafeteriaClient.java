@@ -2,8 +2,6 @@ package src.main.java.com.cafeteria;
 
 import java.io.*;
 import java.net.*;
-import java.sql.SQLException;
-import java.util.List;
 import java.util.Scanner;
 
 public class CafeteriaClient {
@@ -11,11 +9,25 @@ public class CafeteriaClient {
     private static final int SERVER_PORT = 12345;
 
     public static void main(String[] args) {
-        boolean running = true;
         Scanner scanner = new Scanner(System.in);
 
-        while (running) {
-            running = login(scanner);
+        while (true) {
+            System.out.println("Welcome to the Cafeteria Recommendation System");
+            System.out.println("1. Login");
+            System.out.println("2. Exit");
+            System.out.print("Please choose an option: ");
+            String choice = scanner.nextLine();
+
+            if (choice.equals("2")) {
+                System.out.println("Exiting the system. Goodbye!");
+                break;
+            } else if (choice.equals("1")) {
+                if (!login(scanner)) {
+                    break;
+                }
+            } else {
+                System.out.println("Invalid choice. Please enter 1 to Login or 2 to Exit.");
+            }
         }
         scanner.close();
     }
@@ -25,7 +37,6 @@ public class CafeteriaClient {
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 
-            System.out.println("Welcome to the Cafeteria Recommendation System");
             System.out.print("Enter Employee ID: ");
             String employeeId = scanner.nextLine();
             System.out.print("Enter Name: ");
@@ -72,12 +83,12 @@ public class CafeteriaClient {
                     handleGetMenu(in);
                     break;
                 case "VIEW_FINAL_MENU":
-                if ("Employee".equals(role)) {
-                    handleViewFinalMenu(in,scanner);
-                } else {
-                    System.out.println("Invalid command for your role.");
-                }
-                break;
+                    if ("Employee".equals(role)) {
+                        handleViewFinalMenu(in, scanner);
+                    } else {
+                        System.out.println("Invalid command for your role.");
+                    }
+                    break;
                 case "GIVE_FEEDBACK":
                     if ("Employee".equals(role)) {
                         handleGiveFeedback(scanner, out, in);
@@ -165,14 +176,6 @@ public class CafeteriaClient {
         }
     }
 
-    private static void handleShowLoginHistory(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
-        System.out.println("Login/Logout History:");
-        String historyLine;
-        while (!(historyLine = in.readLine()).isEmpty()) {
-            System.out.println(historyLine);
-        }
-    }
-
     private static void showCommands(String role) {
         System.out.println("\nCommands: ");
         System.out.println("GET_MENU - To get the menu items");
@@ -192,7 +195,7 @@ public class CafeteriaClient {
             System.out.println("ADD_MENU_ITEM - To add a menu item");
             System.out.println("UPDATE_MENU_ITEM - To update a menu item");
             System.out.println("DELETE_MENU_ITEM - To delete a menu item");
-            System.out.println("SHOW_LOGIN_LOGOUT_HISTORY - To view login/logout history");
+            System.out.println("SHOW_LOGIN_LOGOUT_HISTORY - To show login/logout history");
         }
     }
 
@@ -271,46 +274,62 @@ public class CafeteriaClient {
 
     private static void handleDeleteMenuItem(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
         System.out.print("Enter Menu Item ID: ");
-        int deleteItemId = Integer.parseInt(scanner.nextLine());
-        out.println(deleteItemId);
+        int itemId = Integer.parseInt(scanner.nextLine());
+        out.println(itemId);
         System.out.println("Response: " + in.readLine());
     }
 
+    private static void handleShowLoginHistory(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
+        out.println("SHOW_LOGIN_LOGOUT_HISTORY");
+        System.out.println("Login/Logout History:");
+        String historyLine;
+        while (!(historyLine = in.readLine()).isEmpty()) {
+            System.out.println(historyLine);
+        }
+    }
+
     private static void handleSendRecommendation(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
-        System.out.print("Enter Menu Item IDs (comma separated): ");
-        String ids = scanner.nextLine();
-        out.println(ids);
+        System.out.print("Enter Recommendation: ");
+        String recommendation = scanner.nextLine();
+        out.println(recommendation);
         System.out.println("Response: " + in.readLine());
     }
 
     private static void handleViewFeedbackReports(BufferedReader in) throws IOException {
         System.out.println("Feedback Reports:");
-        String reportLine;
-        while (!(reportLine = in.readLine()).isEmpty()) {
-            System.out.println(reportLine);
+        String report;
+        while (!(report = in.readLine()).isEmpty()) {
+            System.out.println(report);
         }
     }
 
-    private static void handleViewFinalMenu(BufferedReader in,Scanner scanner) throws IOException {
-        System.out.println("Final Menu:");
-        String menuItem;
-        while ((menuItem = in.readLine()) != null && !menuItem.isEmpty()) {
-            System.out.println(menuItem);
-        }
-}
-
     private static void handleViewVotingResults(BufferedReader in) throws IOException {
         System.out.println("Voting Results:");
-        String resultLine;
-        while (!(resultLine = in.readLine()).isEmpty()) {
-            System.out.println(resultLine);
+        String result;
+        while (!(result = in.readLine()).isEmpty()) {
+            System.out.println(result);
         }
     }
 
     private static void handleChooseFinalMenu(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
-        System.out.print("Enter Final Menu Item IDs (comma separated): ");
-        String finalMenuIds = scanner.nextLine();
-        out.println(finalMenuIds);
+        System.out.println("Choosing Final Menu:");
+        String menuItem;
+        while (!(menuItem = in.readLine()).isEmpty()) {
+            System.out.println(menuItem);
+        }
+
+        System.out.print("Enter the IDs of the chosen menu items (comma-separated): ");
+        String chosenItems = scanner.nextLine();
+        out.println(chosenItems);
+
         System.out.println("Response: " + in.readLine());
+    }
+
+    private static void handleViewFinalMenu(BufferedReader in, Scanner scanner) throws IOException {
+        System.out.println("Final Menu:");
+        String menuItem;
+        while (!(menuItem = in.readLine()).isEmpty()) {
+            System.out.println(menuItem);
+        }
     }
 }
