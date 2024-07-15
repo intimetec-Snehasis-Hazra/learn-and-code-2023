@@ -145,11 +145,11 @@ class ClientHandler extends Thread {
                     break;
                 case "GIVE_FEEDBACK":
                     if (user instanceof Employee) {
-                        out.println("Enter Menu Item ID: ");
+                       
                         int menuItemId = Integer.parseInt(in.readLine());
-                        out.println("Enter Comment: ");
+                        
                         String comment = in.readLine();
-                        out.println("Enter Rating (1-5): ");
+                       
                         int rating = Integer.parseInt(in.readLine());
                         ((Employee) user).giveFeedback(menuItemId, comment, rating);
                         out.println("Feedback submitted.");
@@ -159,11 +159,11 @@ class ClientHandler extends Thread {
                     break;
                 case "ADD_MENU_ITEM":
                     if (user instanceof Admin) {
-                        out.println("Enter Menu Item Name: ");
+                        
                         String name = in.readLine();
-                        out.println("Enter Menu Item Price: ");
+                        
                         float price = Float.parseFloat(in.readLine());
-                        out.println("Is the item available? (true/false): ");
+                        
                         boolean availability = Boolean.parseBoolean(in.readLine());
                         ((Admin) user).addMenuItem(name, price, availability);
                         out.println("Menu item added.");
@@ -173,13 +173,13 @@ class ClientHandler extends Thread {
                     break;
                 case "UPDATE_MENU_ITEM":
                     if (user instanceof Admin) {
-                        out.println("Enter Menu Item ID: ");
+                        
                         int menuItemId = Integer.parseInt(in.readLine());
-                        out.println("Enter New Menu Item Name: ");
+                       
                         String name = in.readLine();
-                        out.println("Enter New Menu Item Price: ");
+                        
                         float price = Float.parseFloat(in.readLine());
-                        out.println("Is the item available? (true/false): ");
+                        
                         boolean availability = Boolean.parseBoolean(in.readLine());
                         ((Admin) user).updateMenuItem(menuItemId, name, price, availability);
                         out.println("Menu item updated.");
@@ -189,7 +189,7 @@ class ClientHandler extends Thread {
                     break;
                 case "DELETE_MENU_ITEM":
                     if (user instanceof Admin) {
-                        out.println("Enter Menu Item ID: ");
+                       
                         int menuItemId = Integer.parseInt(in.readLine());
                         ((Admin) user).deleteMenuItem(menuItemId);
                         out.println("Menu item deleted.");
@@ -199,7 +199,6 @@ class ClientHandler extends Thread {
                     break;
                 case "SEND_RECOMMENDATION":
                     if (user instanceof Chef) {
-                        out.println("Enter Menu Item IDs (comma separated): ");
                         String[] ids = in.readLine().split(",");
                         List<MenuItem> recommendedItems = new ArrayList<MenuItem>();
                         for (String id : ids) {
@@ -243,6 +242,7 @@ class ClientHandler extends Thread {
                     }
                     break;
                     case "VIEW_VOTING_RESULTS":
+                    System.out.println("Entered");
                     if (user instanceof Chef) {
                         List<VotingResult> votingResults = Database.getVotingResults();
                         for (VotingResult result : votingResults) {
@@ -255,7 +255,6 @@ class ClientHandler extends Thread {
                     break;
                     case "CHOOSE_FINAL_MENU":
                     if (user instanceof Chef) {
-                        out.println("Enter Menu Item IDs for Final Menu (comma separated): ");
                         String[] finalMenuIds = in.readLine().split(",");
                         List<MenuItem> finalMenuItems = new ArrayList<>();
                         for (String id : finalMenuIds) {
@@ -284,7 +283,6 @@ class ClientHandler extends Thread {
                 break;
                 case "VOTE":
                     if (user instanceof Employee) {
-                        out.println("Enter Menu Item ID: ");
                         int menuItemId = Integer.parseInt(in.readLine());
                         Database.storeVote(user.getEmployeeId(), menuItemId);
                         out.println("Vote submitted.");
@@ -300,7 +298,7 @@ class ClientHandler extends Thread {
                                         ", Login Time: " + session.getLoginTime() + 
                                         ", Logout Time: " + session.getLogoutTime());
                         }
-                        out.println(); // Indicate end of history
+                        out.println();
                     } else {
                         out.println("Only admin can view login/logout history.");
                     }

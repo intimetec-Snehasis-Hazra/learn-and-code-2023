@@ -271,14 +271,14 @@ public class CafeteriaClient {
         out.println(feedbackComment);
         out.println(feedbackRating);
 
-        System.out.println("Response: " + in.readLine());
+        System.out.println(in.readLine());
     }
 
     private static void handleVote(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
         System.out.print("Enter Menu Item ID: ");
         int menuItemId = Integer.parseInt(scanner.nextLine());
         out.println(menuItemId);
-        System.out.println("Response: " + in.readLine());
+        System.out.println(in.readLine());
     }
 
     private static void handleViewRecommendations(BufferedReader in) throws IOException {
@@ -301,7 +301,7 @@ public class CafeteriaClient {
         out.println(itemPrice);
         out.println(availability);
 
-        System.out.println("Response: " + in.readLine());
+        System.out.println(in.readLine());
     }
 
     private static void handleUpdateMenuItem(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
@@ -319,18 +319,17 @@ public class CafeteriaClient {
         out.println(newItemPrice);
         out.println(newAvailability);
 
-        System.out.println("Response: " + in.readLine());
+        System.out.println(in.readLine());
     }
 
     private static void handleDeleteMenuItem(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
         System.out.print("Enter Menu Item ID: ");
         int itemId = Integer.parseInt(scanner.nextLine());
         out.println(itemId);
-        System.out.println("Response: " + in.readLine());
+        System.out.println(in.readLine());
     }
 
     private static void handleShowLoginHistory(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
-        out.println("SHOW_LOGIN_LOGOUT_HISTORY");
         System.out.println("Login/Logout History:");
         String historyLine;
         while (!(historyLine = in.readLine()).isEmpty()) {
@@ -339,10 +338,10 @@ public class CafeteriaClient {
     }
 
     private static void handleSendRecommendation(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
-        System.out.print("Enter Recommendation: ");
+        System.out.println("Enter Menu Item IDs (comma separated): ");
         String recommendation = scanner.nextLine();
         out.println(recommendation);
-        System.out.println("Response: " + in.readLine());
+        System.out.println(in.readLine());
     }
 
     private static void handleViewFeedbackReports(BufferedReader in) throws IOException {
@@ -362,17 +361,11 @@ public class CafeteriaClient {
     }
 
     private static void handleChooseFinalMenu(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
-        System.out.println("Choosing Final Menu:");
-        String menuItem;
-        while (!(menuItem = in.readLine()).isEmpty()) {
-            System.out.println(menuItem);
-        }
-
         System.out.print("Enter the IDs of the chosen menu items (comma-separated): ");
         String chosenItems = scanner.nextLine();
         out.println(chosenItems);
 
-        System.out.println("Response: " + in.readLine());
+        System.out.println(in.readLine());
     }
 
     private static void handleViewFinalMenu(BufferedReader in, Scanner scanner) throws IOException {
