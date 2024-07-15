@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.net.ServerSocket;
 
 public class CafeteriaServer {
@@ -83,6 +84,51 @@ class ClientHandler extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void handleViewDiscardMenuItemList(PrintWriter out, BufferedReader in) throws IOException, SQLException {
+        List<Feedback> feedbackList = Database.getAllFeedbacks();
+        RecommendationEngine engine = new RecommendationEngine(feedbackList);
+        List<MenuItem> discardList = engine.getDiscardMenuItems();
+    
+        out.println("Discard Menu Item List:");
+        for (MenuItem item : discardList) {
+            out.println(item.getId() + ". " + item.getName() + " - Average Rating: " + engine.getAverageRatings().get(item.getId()) + " - Sentiments: " + engine.getItemSentiments().get(item.getId()));
+        }
+        out.println(); // End of discard list
+    
+        while (true) {
+            String choice = in.readLine();
+    
+            if (choice.equals("1")) {
+                String itemName = in.readLine();
+                Database.removeMenuItemByName(itemName);
+                out.println(itemName + " has been removed from the menu.");
+            } else if (choice.equals("2")) {
+                String itemName = in.readLine();
+                sendDetailedFeedbackNotification(itemName);
+                out.println("Detailed feedback sent for " + itemName + ".");
+                out.println();
+            } else if (choice.equals("3")) {
+                out.println("Exiting discard menu item list.");
+                break;
+            } else {
+                out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+    
+    
+    
+    
+
+    public static void sendDetailedFeedbackNotification(String itemName) {
+        System.out.println("Entered");
+        String message = "We are trying to improve your experience with " + itemName + ". Please provide your feedback and help us.\n" +
+                "Q1. What didn’t you like about " + itemName + "?\n" +
+                "Q2. How would you like " + itemName + " to taste?\n" +
+                "Q3. Share your mom’s recipe.";
+        //NotificationManager.notifyUsers(message);
     }
 
     private void processCommand(User user, String command) throws IOException {
@@ -258,6 +304,19 @@ class ClientHandler extends Thread {
                     } else {
                         out.println("Only admin can view login/logout history.");
                     }
+                    break;
+                    case "VIEW_DISCARDED_MENU_ITEMS":
+
+                    if (user instanceof Admin) {
+
+                        handleViewDiscardMenuItemList(out, in);
+
+                    } else {
+
+                        out.println("Unauthorized command");
+
+                    }
+
                     break;
                 default:
                     out.println("Unknown command");

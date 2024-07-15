@@ -129,6 +129,54 @@ public class Database {
         }
     }
 
+    public static List<String> getSentimentsForMenuItem(int menuItemId) throws SQLException {
+
+        List<String> sentiments = new ArrayList<>();
+
+        String query = "SELECT sentiment FROM Feedback WHERE menuItemId = ?";
+
+        try (Connection connection = getConnection();
+
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, menuItemId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                while (resultSet.next()) {
+
+                    sentiments.add(resultSet.getString("sentiment"));
+
+                }
+
+            }
+
+        }
+
+        return sentiments;
+
+    }
+
+    public static void removeMenuItemByName(String name) {
+
+        try (Connection conn = getConnection()) {
+
+            String query = "DELETE FROM MenuItems WHERE name = ?";
+
+            PreparedStatement stmt = conn.prepareStatement(query);
+
+            stmt.setString(1, name);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+
+        }
+
+    }
+
     public static void storeFeedback(String employeeId, int menuItemId, String comment, int rating, String sentiment) {
         try (Connection conn = getConnection()) {
             String query = "INSERT INTO Feedback (menuItemId, employeeId, comment, rating, feedbackDate,sentiment) VALUES (?, ?, ?, ?, ?,?)";

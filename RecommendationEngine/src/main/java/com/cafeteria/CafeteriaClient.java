@@ -166,6 +166,13 @@ public class CafeteriaClient {
                         System.out.println("Invalid command for your role.");
                     }
                     break;
+                case "VIEW_DISCARDED_MENU_ITEMS":
+                    if ("Admin".equals(role)) {
+                        handleViewDiscardMenuItemList(scanner, out, in);
+                    } else {
+                        System.out.println("Invalid command for your role.");
+                    }
+                    break;
                 default:
                     System.out.println("Unknown command");
                     break;
@@ -196,6 +203,7 @@ public class CafeteriaClient {
             System.out.println("UPDATE_MENU_ITEM - To update a menu item");
             System.out.println("DELETE_MENU_ITEM - To delete a menu item");
             System.out.println("SHOW_LOGIN_LOGOUT_HISTORY - To show login/logout history");
+            System.out.println("VIEW_DISCARDED_MENU_ITEMS");
         }
     }
 
@@ -207,6 +215,48 @@ public class CafeteriaClient {
         }
     }
 
+    private static void handleViewDiscardMenuItemList(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
+        String line;
+        System.out.println("Discarded Menu Items:");
+        while (!(line = in.readLine()).isEmpty()) {
+            System.out.println(line);
+        }
+    
+        while (true) {
+            System.out.println("1) Remove the Food Item from Menu List");
+            System.out.println("2) Get Detailed Feedback");
+            System.out.println("3) Exit");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+            out.println(choice);
+    
+            if (choice.equals("1")) {
+                System.out.print("Enter the food item name to remove: ");
+                String itemName = scanner.nextLine();
+                out.println(itemName);
+            } else if (choice.equals("2")) {
+                System.out.print("Enter the food item name to get detailed feedback: ");
+                String itemName = scanner.nextLine();
+                out.println(itemName);
+            } else if (choice.equals("3")) {
+                out.println(choice);
+                System.out.println("Exiting discard menu item list.");
+                break;
+            } else {
+                System.out.println("Invalid choice. Please try again.");
+                continue;
+            }
+    
+            while (!(line = in.readLine()).isEmpty()) {
+                System.out.println(line);
+            }
+        }
+    }
+    
+    
+    
+    
+    
     private static void handleGiveFeedback(Scanner scanner, PrintWriter out, BufferedReader in) throws IOException {
         System.out.print("Enter Menu Item ID: ");
         int feedbackItemId = Integer.parseInt(scanner.nextLine());
